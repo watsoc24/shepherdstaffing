@@ -35,3 +35,9 @@ yarn-error.log*
 
 # Vercel
 .vercel
+
+# Coverage / test / generated
+coverage/
+src/generated/
+next-env.d.ts
+*.tsbuildinfo

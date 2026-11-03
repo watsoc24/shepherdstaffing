@@ -1,0 +1,7 @@
+# Secret scanning (CI + pre-commit). Uses gitleaks' default rules.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Example env file and test fixtures contain no real secrets"
+paths = ['''\.env\.example$''', '''^tests/''']

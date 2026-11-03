@@ -1,0 +1,427 @@
+// Shepherd Staffing data model (Postgres). Mirrors spec Section 5; field names are
+// camelCase versions of the spec's names. Columns ending in "Enc" hold AES-256-GCM
+// ciphertext produced by src/lib/security/crypto.ts — never plaintext.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  candidate
+  church
+  admin
+}
+
+enum SubscriptionStatus {
+  none
+  trial
+  active
+  past_due
+  cancelled
+  expired
+}
+
+enum Visibility {
+  public
+  hidden
+}
+
+// ───────────────────────────── Users ─────────────────────────────
+
+model User {
+  id                 String             @id @default(cuid())
+  email              String             @unique // always lowercase
+  passwordHash       String
+  name               String
+  role               Role
+  emailVerified      Boolean            @default(false)
+  verifyTokenHash    String?            @unique
+  verifyTokenExpires DateTime?
+  resetTokenHash     String?            @unique
+  resetTokenExpires  DateTime?
+  trialStartDate     DateTime?
+  trialEndDate       DateTime?
+  trialChatCount     Int                @default(0)
+  subscriptionStatus SubscriptionStatus @default(none)
+  subscriptionTier   String?
+  stripeCustomerId   String?            @unique
+  failedLoginCount   Int                @default(0)
+  lockedUntil        DateTime?
+  sessionVersion     Int                @default(1) // bump to revoke every session
+  deactivatedAt      DateTime?
+  deletedAt          DateTime?
+  emailDigestOptOut  Boolean            @default(false)
+  trialReminderSentAt DateTime?
+  trialExpiredSentAt DateTime?
+
+  // Admin TOTP 2FA (required for role=admin).
+  mfaEnabled         Boolean            @default(false)
+  mfaSecretEnc       String?
+  mfaPendingSecretEnc String?
+  mfaBackupCodeHashes String[]
+  mfaLastStep        Int?
+
+  candidate     Candidate?
+  church        Church?
+  subscriptions Subscription[]
+  consents      Consent[]
+  chatMessages  ChatMessage[]
+  aiUsage       AiUsage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([role])
+  @@index([subscriptionStatus, trialEndDate])
+}
+
+// ─────────────────────────── Profiles ───────────────────────────
+
+model Candidate {
+  id             String     @id @default(cuid())
+  userId         String     @unique
+  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayCode    String     @unique // random 6 chars for anonymized listings
+  name           String?
+  position       String?
+  theology       String?
+  yearsExp       Int?
+  currentRole    String?
+  geoPreference  String?
+  relocation     String?
+  salaryRange    String?
+  philosophy     String?
+  strengths      String?
+  callingNotesEnc   String?
+  nonNegotiablesEnc String?
+  privateNotesEnc   String?
+  familyNotesEnc    String? // recruiter-only; never sent to AI or other users
+  profileScore   Int        @default(0)
+  verified       Boolean    @default(false)
+  verifiedBy     String?
+  verifiedAt     DateTime?
+  visibility     Visibility @default(public)
+
+  matches    Match[]
+  threads    Thread[]
+  interviews Interview[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([visibility, position])
+}
+
+model Church {
+  id            String     @id @default(cuid())
+  userId        String     @unique
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayCode   String     @unique
+  name          String?
+  city          String?
+  region        String? // derived/entered region shown in anonymized listings
+  denomination  String?
+  theology      String?
+  size          String?
+  stage         String?
+  position      String?
+  salaryRange   String?
+  timeline      String?
+  culture       String?
+  mustHave      String?
+  niceToHave    String?
+  whyHere       String?
+  dealBreakerEnc String?
+  profileScore  Int        @default(0)
+  visibility    Visibility @default(public)
+
+  matches     Match[]
+  threads     Thread[]
+  engagements Engagement[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([visibility, position])
+}
+
+// ─────────────────────────── Matching ───────────────────────────
+
+enum MatchStatus {
+  suggested
+  viewed
+  dismissed
+}
+
+model Match {
+  id             String      @id @default(cuid())
+  candidateId    String
+  candidate      Candidate   @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  churchId       String
+  church         Church      @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  score          Int
+  breakdown      Json
+  strengths      Json
+  gaps           Json
+  recommendation String
+  inputsHash     String
+  modelVersion   String
+  status         MatchStatus @default(suggested)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([candidateId, churchId])
+  @@index([churchId, score])
+  @@index([candidateId, score])
+}
+
+// ─────────────────────────── Messaging ───────────────────────────
+
+enum ThreadStatus {
+  requested
+  accepted
+  declined
+  closed
+}
+
+model Thread {
+  id                String       @id @default(cuid())
+  candidateId       String
+  candidate         Candidate    @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  churchId          String
+  church            Church       @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  initiatedByUserId String
+  status            ThreadStatus @default(requested)
+  contactSharedAt   DateTime?
+  messages          Message[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([candidateId, churchId])
+}
+
+model Message {
+  id           String    @id @default(cuid())
+  threadId     String
+  thread       Thread    @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  senderUserId String
+  body         String
+  readAt       DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@index([threadId, createdAt])
+}
+
+model Block {
+  id            String   @id @default(cuid())
+  blockerUserId String
+  blockedUserId String
+  createdAt     DateTime @default(now())
+
+  @@unique([blockerUserId, blockedUserId])
+}
+
+model Report {
+  id             String   @id @default(cuid())
+  reporterUserId String
+  reportedUserId String
+  threadId       String?
+  reason         String
+  status         String   @default("open") // open | reviewed | actioned
+  createdAt      DateTime @default(now())
+}
+
+// ─────────────────────────── Interviews ───────────────────────────
+
+enum InterviewStatus {
+  draft
+  submitted
+  evaluated
+}
+
+model Interview {
+  id                 String          @id @default(cuid())
+  candidateId        String
+  candidate          Candidate       @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  status             InterviewStatus @default(draft)
+  answersEnc         String? // ciphertext of JSON { "1": "...", ... }
+  mediaRefs          Json? // v1.1
+  evaluationJson     Json?
+  score              Int?
+  consentAt          DateTime?
+  consentTextVersion String?
+  shareWithChurchIds String[]
+  retakeAllowed      Boolean         @default(false)
+  submittedAt        DateTime?
+  recruiterNotes     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([candidateId])
+}
+
+// ─────────────────────────── Billing ───────────────────────────
+
+model Subscription {
+  id                   String    @id @default(cuid())
+  userId               String
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripeCustomerId     String
+  stripeSubscriptionId String    @unique
+  tier                 String
+  status               String
+  cancelAtPeriodEnd    Boolean   @default(false)
+  currentPeriodEnd     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model StripeEvent {
+  eventId     String   @id // idempotency key
+  type        String
+  processedAt DateTime @default(now())
+}
+
+// ─────────────────────── Intake & engagements ───────────────────────
+
+enum InquiryTier {
+  assisted
+  full
+}
+
+enum InquiryStatus {
+  new
+  contacted
+  scoped
+  won
+  lost
+}
+
+model Inquiry {
+  id            String        @id @default(cuid())
+  userId        String?
+  contactName   String
+  contactEmail  String
+  churchName    String
+  tier          InquiryTier
+  role          String?
+  timeline      String?
+  budget        String?
+  churchSize    String?
+  theology      String?
+  notes         String?
+  status        InquiryStatus @default(new)
+  assignedTo    String?
+  internalNotes String?
+  engagements   Engagement[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, tier])
+}
+
+enum EngagementStage {
+  intake
+  sourcing
+  shortlist
+  interviews
+  references
+  offer
+  placed
+  closed
+}
+
+model Engagement {
+  id                    String          @id @default(cuid())
+  inquiryId             String?
+  inquiry               Inquiry?        @relation(fields: [inquiryId], references: [id], onDelete: SetNull)
+  churchId              String?
+  church                Church?         @relation(fields: [churchId], references: [id], onDelete: SetNull)
+  tier                  InquiryTier
+  feeAgreed             Decimal?        @db.Decimal(12, 2)
+  stripeReference       String?
+  paidAt                DateTime?
+  stage                 EngagementStage @default(intake)
+  shortlist             Json            @default("[]") // [{candidateId, status, note}]
+  referenceChecks       Json            @default("[]")
+  backgroundCheckStatus String?
+  guaranteeEndsAt       DateTime?
+  weeklyReportLog       Json            @default("[]") // [{at, summary, visibleToClient}]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─────────────────────── Consent, AI, audit ───────────────────────
+
+enum ConsentType {
+  terms
+  privacy
+  interview_recording
+  share_profile
+  background_check
+}
+
+model Consent {
+  id         String      @id @default(cuid())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       ConsentType
+  version    String
+  acceptedAt DateTime    @default(now())
+  ip         String?
+
+  @@index([userId, type])
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String // user | assistant
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+// Token usage per call for cost tracking. Never stores prompt text.
+model AiUsage {
+  id           String   @id @default(cuid())
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  feature      String // match | chat | interview
+  model        String
+  inputTokens  Int
+  outputTokens Int
+  ok           Boolean
+  createdAt    DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorUserId String?
+  action      String
+  targetType  String?
+  targetId    String?
+  ip          String?
+  meta        Json?
+  at          DateTime @default(now())
+
+  @@index([actorUserId, at])
+  @@index([targetType, targetId])
+}
