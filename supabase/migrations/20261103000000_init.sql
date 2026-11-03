@@ -293,6 +293,8 @@ create table public.listings (
   region text not null check (char_length(btrim(region)) between 1 and 80),
   country text not null default 'US' check (char_length(btrim(country)) between 2 and 56),
   status public.listing_status not null default 'active',
+  -- Set only by a platform admin when removing a listing for a policy breach.
+  removed_by_admin boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -314,6 +316,28 @@ begin
 end $$;
 create trigger listings_currency before insert or update of country on public.listings
   for each row execute function private.listing_currency();
+-- Sellers cannot undo a moderator's removal, and cannot relist an item that
+-- has a paid order. Only platform admins (or the service role) can.
+create or replace function private.guard_listing_status()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  if auth.uid() is null or private.is_platform_admin() then
+    return new;
+  end if;
+  if new.removed_by_admin is distinct from old.removed_by_admin then
+    raise exception 'not_authorized' using errcode = '42501';
+  end if;
+  if old.removed_by_admin and new.status <> 'removed' then
+    raise exception 'not_authorized' using errcode = '42501', hint = 'Removed by moderator';
+  end if;
+  if old.status = 'sold' and new.status <> 'sold'
+     and exists (select 1 from public.orders o where o.listing_id = old.id and o.status = 'paid') then
+    raise exception 'not_authorized' using errcode = '42501', hint = 'Listing has a paid order';
+  end if;
+  return new;
+end $$;
+create trigger listings_guard_status before update on public.listings
+  for each row execute function private.guard_listing_status();
 create trigger listings_quota before insert on public.listings
   for each row execute function private.enforce_quota('seller_id', '20', '24 hours');
 
@@ -679,7 +703,7 @@ grant update (nickname, birth_year, dance_level, school_id) on public.children t
 grant select, delete on public.listings to authenticated;
 grant insert (title, description, category, size_label, price_cents, shipping_cents, condition, city, region, country)
   on public.listings to authenticated;
-grant update (title, description, category, size_label, price_cents, shipping_cents, condition, city, region, country, status)
+grant update (title, description, category, size_label, price_cents, shipping_cents, condition, city, region, country, status, removed_by_admin)
   on public.listings to authenticated;
 
 grant select, delete on public.listing_photos to authenticated;

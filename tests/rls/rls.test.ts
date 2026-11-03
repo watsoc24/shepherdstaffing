@@ -304,6 +304,50 @@ describe("marketplace listings and photos", () => {
     ).rejects.toThrow(DENIED);
   });
 
+  it("sellers cannot undo a moderator's removal or set the moderation flag", async () => {
+    const id = randomUUID();
+    await pool.query(
+      `insert into public.listings (id, seller_id, title, category, size_label, price_cents, condition, city, region, status, removed_by_admin)
+       values ($1, $2, 'Moderated', 'wig', 'S', 2000, 'good', 'X', 'Y', 'removed', true)`,
+      [id, u.parentA],
+    );
+    await expect(
+      as({ id: u.parentA }, (q) => q("update public.listings set status = 'active' where id = $1", [id])),
+    ).rejects.toThrow(DENIED);
+    await expect(
+      as({ id: u.parentA }, (q) =>
+        q("update public.listings set removed_by_admin = false, status = 'active' where id = $1", [id]),
+      ),
+    ).rejects.toThrow(DENIED);
+    await expect(
+      as({ id: u.parentA }, (q) => q("update public.listings set removed_by_admin = true where id = $1", [ids.listingA])),
+    ).rejects.toThrow(DENIED);
+    // a seller can still edit text on their own normal listing
+    expect(
+      await as({ id: u.parentA }, (q) => q("update public.listings set title = 'Solo dress A2' where id = $1 returning id", [ids.listingA])),
+    ).toHaveLength(1);
+    await pool.query("delete from public.listings where id = $1", [id]);
+  });
+
+  it("sellers cannot relist an item that has a paid order", async () => {
+    const id = randomUUID();
+    await pool.query(
+      `insert into public.listings (id, seller_id, title, category, size_label, price_cents, condition, city, region, status)
+       values ($1, $2, 'Sold dress', 'solo_dress', 'S', 2000, 'good', 'X', 'Y', 'sold')`,
+      [id, u.parentA],
+    );
+    await pool.query(
+      `insert into public.orders (listing_id, listing_title, buyer_id, seller_id, amount_cents, platform_fee_cents, currency, stripe_account_id, status)
+       values ($1, 'Sold dress', $2, $3, 2000, 140, 'usd', 'acct_test_A', 'paid')`,
+      [id, u.parentB, u.parentA],
+    );
+    await expect(
+      as({ id: u.parentA }, (q) => q("update public.listings set status = 'active' where id = $1", [id])),
+    ).rejects.toThrow(DENIED);
+    await pool.query("delete from public.orders where listing_id = $1", [id]);
+    await pool.query("delete from public.listings where id = $1", [id]);
+  });
+
   it("members cannot attach photos to someone else's listing", async () => {
     await expect(
       as({ id: u.parentB }, (q) =>

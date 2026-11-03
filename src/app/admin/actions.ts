@@ -96,7 +96,7 @@ export async function removeListing(listingId: string): Promise<FormState> {
   await requirePlatformAdmin();
   if (!uuidSchema.safeParse(listingId).success) return { error: "Not found." };
   const supabase = await createClient();
-  const { error } = await supabase.from("listings").update({ status: "removed" }).eq("id", listingId);
+  const { error } = await supabase.from("listings").update({ status: "removed", removed_by_admin: true }).eq("id", listingId);
   if (error) return dbError(error);
   revalidatePath("/admin");
   return { ok: true, message: "Listing removed." };

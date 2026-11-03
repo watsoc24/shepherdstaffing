@@ -28,9 +28,12 @@ describe("money parsing", () => {
 });
 
 describe("safeNext (open redirect protection)", () => {
-  it("allows relative paths", () => expect(safeNext("/marketplace/abc")).toBe("/marketplace/abc"));
+  it("allows relative paths", () => {
+    expect(safeNext("/marketplace/abc")).toBe("/marketplace/abc");
+    expect(safeNext("/feis?where=Boston")).toBe("/feis?where=Boston");
+  });
   it("blocks external and protocol-relative URLs", () => {
-    for (const bad of ["https://evil.test", "//evil.test", "/\\evil.test", "javascript:alert(1)", "/a\r\nb", 5]) {
+    for (const bad of ["https://evil.test", "//evil.test", "/\\evil.test", "/\t/evil.test", "/%09/evil.test".replace("%09", "\t"), "javascript:alert(1)", "/a\r\nb", 5]) {
       expect(safeNext(bad)).toBe("/account");
     }
   });

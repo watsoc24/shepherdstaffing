@@ -9,6 +9,8 @@ export type Account = {
   role: "parent" | "school_admin";
   isPlatformAdmin: boolean;
   aal: "aal1" | "aal2";
+  /** True when the user has a verified second factor (so must reach aal2). */
+  hasMfaFactor: boolean;
 };
 
 /** The verified current user (or null). Cached per request. */
@@ -22,23 +24,27 @@ export const getAccount = cache(async (): Promise<Account | null> => {
     .select("role, is_platform_admin")
     .eq("user_id", claims.sub)
     .maybeSingle();
+  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
   return {
     id: claims.sub,
     email: (claims.email as string | undefined) ?? null,
     role: roleRow?.role === "school_admin" ? "school_admin" : "parent",
     isPlatformAdmin: Boolean(roleRow?.is_platform_admin),
     aal: claims.aal === "aal2" ? "aal2" : "aal1",
+    hasMfaFactor: aal?.nextLevel === "aal2",
   };
 });
 
 /** True when this account must use two-factor authentication. */
 export function requiresMfa(account: Account) {
-  return account.role === "school_admin" || account.isPlatformAdmin;
+  return account.role === "school_admin" || account.isPlatformAdmin || account.hasMfaFactor;
 }
 
 /**
- * Requires a signed-in user. School admins and platform admins must also have
- * completed MFA in this session (the proxy redirects them, this double-checks).
+ * Requires a signed-in user. Anyone who must use MFA (school/platform admins,
+ * or anyone who has set it up) must have completed it in this session.
+ * This is the real gate: the proxy redirect is only a convenience and is
+ * skipped for prefetch requests and server-action POSTs to public paths.
  */
 export async function requireUser(next = "/account"): Promise<Account> {
   const account = await getAccount();
