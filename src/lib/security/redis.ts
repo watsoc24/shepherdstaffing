@@ -11,6 +11,8 @@ export interface Kv {
   get<T>(key: string): Promise<T | null>;
   set(key: string, value: unknown, ttlSeconds: number): Promise<void>;
   del(key: string): Promise<void>;
+  /** Atomic increment; sets the TTL when the key is created. */
+  incr(key: string, ttlSeconds: number): Promise<number>;
 }
 
 class MemoryKv implements Kv {
@@ -25,6 +27,13 @@ class MemoryKv implements Kv {
   }
   async del(key: string) {
     this.store.delete(key);
+  }
+  async incr(key: string, ttlSeconds: number) {
+    const cur = (await this.get<number>(key)) ?? 0;
+    const hit = this.store.get(key);
+    const next = cur + 1;
+    this.store.set(key, { value: next, expires: hit && hit.expires > Date.now() ? hit.expires : Date.now() + ttlSeconds * 1000 });
+    return next;
   }
   clear() {
     this.store.clear();
@@ -56,6 +65,11 @@ export function kv(): Kv {
     },
     del: async (key) => {
       await r.del(key);
+    },
+    incr: async (key, ttlSeconds) => {
+      const n = await r.incr(key);
+      if (n === 1) await r.expire(key, ttlSeconds);
+      return n;
     },
   };
 }

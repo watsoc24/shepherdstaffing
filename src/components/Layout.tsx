@@ -2,9 +2,11 @@ import Link from "next/link";
 import Head from "next/head";
 import type { ReactNode } from "react";
 import { BRAND, SUPPORT_EMAIL } from "@/lib/brand";
+import { useAuth } from "@/context/AuthContext";
 
 export function Layout({ title, children, dark = false }: { title?: string; children: ReactNode; dark?: boolean }) {
   const fullTitle = title ? `${title} · ${BRAND}` : BRAND;
+  const { user, logout } = useAuth();
   return (
     <>
       <Head>
@@ -17,7 +19,14 @@ export function Layout({ title, children, dark = false }: { title?: string; chil
           <Link href="/" className="brand">{BRAND}</Link>
           <nav aria-label="Main" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             <Link href="/pricing">Pricing</Link>
-            <Link href="/login">Sign in</Link>
+            {user ? (
+              <>
+                <Link href="/dashboard">Dashboard</Link>
+                <button type="button" className="linklike" onClick={() => void logout()}>Sign out</button>
+              </>
+            ) : (
+              <Link href="/login">Sign in</Link>
+            )}
           </nav>
         </header>
       </div>

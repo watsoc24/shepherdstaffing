@@ -1,5 +1,6 @@
 import type { AppProps } from "next/app";
 import { Cormorant_Garamond, DM_Sans, DM_Mono } from "next/font/google";
+import { AuthProvider } from "@/context/AuthContext";
 import "@/styles/globals.css";
 
 // Self-hosted at build time by next/font, so no third-party font requests (keeps CSP strict).
@@ -10,7 +11,9 @@ const dmMono = DM_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <div className={`app-root ${cormorant.variable} ${dmSans.variable} ${dmMono.variable}`}>
-      <Component {...pageProps} />
+      <AuthProvider>
+        <Component {...pageProps} />
+      </AuthProvider>
     </div>
   );
 }

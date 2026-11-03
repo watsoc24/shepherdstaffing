@@ -44,4 +44,5 @@ src/content          legal markdown       src/lib/ai, billing, email, scoring, v
 ## Milestone status
 
 - [x] **M1 Foundation** — scaffold, env validation, data layer, Redis rate limiter, AES-256-GCM crypto, audit log, strict CSP, CI
-- [ ] M2 Auth · M3 Profiles · M4 Billing · M5 Matching + Chat · M6 Messaging · M7 Interview · M8 Intake + Admin · M9 Compliance + Ops · M10 Launch hardening
+- [x] **M2 Auth** — signup, hashed single-use verify tokens, trial-at-verify, login with lockout, reset, session versioning, CSRF, entitlements, guards
+- [ ] M3 Profiles · M4 Billing · M5 Matching + Chat · M6 Messaging · M7 Interview · M8 Intake + Admin · M9 Compliance + Ops · M10 Launch hardening
