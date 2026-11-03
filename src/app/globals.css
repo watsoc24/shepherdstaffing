@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: #ecfdf3;
+  --color-brand-100: #d1fadf;
+  --color-brand-600: #0b7a45;
+  --color-brand-700: #086438;
+  --color-brand-900: #053321;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background: #f8faf9;
+  color: #1c2622;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-gray-200 bg-white p-4 shadow-sm;
+  }
+  .btn {
+    @apply inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-600 px-4 py-2 font-semibold text-white hover:bg-brand-700 disabled:opacity-60;
+  }
+  .btn-secondary {
+    @apply inline-flex min-h-11 items-center justify-center rounded-xl border border-gray-300 bg-white px-4 py-2 font-semibold text-gray-800 hover:bg-gray-50 disabled:opacity-60;
+  }
+  .btn-danger {
+    @apply inline-flex min-h-11 items-center justify-center rounded-xl bg-red-600 px-4 py-2 font-semibold text-white hover:bg-red-700 disabled:opacity-60;
+  }
+  .label {
+    @apply mb-1 block text-sm font-medium text-gray-700;
+  }
+  /* 16px text stops iPhone Safari from zooming into inputs */
+  .input {
+    @apply block min-h-11 w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-base focus:border-brand-600 focus:ring-2 focus:ring-brand-100 focus:outline-none;
+  }
+  .hint {
+    @apply mt-1 text-sm text-gray-500;
+  }
+  .page-title {
+    @apply mb-4 text-2xl font-bold text-gray-900;
+  }
+  .link {
+    @apply font-medium text-brand-700 underline underline-offset-2;
+  }
+  .badge {
+    @apply inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700;
+  }
+}
