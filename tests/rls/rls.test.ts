@@ -285,6 +285,25 @@ describe("marketplace listings and photos", () => {
     ).rejects.toThrow(DENIED);
   });
 
+  it("currency is set from the country and cannot be chosen by the user", async () => {
+    const rows = await as({ id: u.parentB }, (q) =>
+      q(
+        `insert into public.listings (title, category, size_label, price_cents, condition, city, region, country)
+         values ('Ghillies', 'soft_shoes', '5', 2000, 'good', 'Dublin', 'Dublin', 'IE') returning currency, seller_id`,
+      ),
+    );
+    expect(rows[0]).toEqual({ currency: "eur", seller_id: u.parentB });
+    await expect(
+      as({ id: u.parentB }, (q) => q("update public.listings set currency = 'usd' where id = $1", [ids.listingRemoved])),
+    ).rejects.toThrow(DENIED);
+  });
+
+  it("sellers cannot mark a listing sold via a fake order or change its owner", async () => {
+    await expect(
+      as({ id: u.parentA }, (q) => q("update public.listings set seller_id = $1 where id = $2", [u.parentB, ids.listingA])),
+    ).rejects.toThrow(DENIED);
+  });
+
   it("members cannot attach photos to someone else's listing", async () => {
     await expect(
       as({ id: u.parentB }, (q) =>

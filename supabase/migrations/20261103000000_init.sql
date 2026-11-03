@@ -300,6 +300,20 @@ create index listings_active_idx on public.listings (created_at desc) where stat
 create index listings_seller_idx on public.listings (seller_id);
 create trigger listings_updated_at before update on public.listings
   for each row execute function private.set_updated_at();
+-- Currency always follows the listing country; users cannot set it.
+create or replace function private.listing_currency()
+returns trigger language plpgsql set search_path = '' as $$
+begin
+  if new.country not in ('US', 'CA', 'GB', 'IE', 'AU', 'NZ') then
+    raise exception 'unsupported_country' using errcode = '23514';
+  end if;
+  new.currency := case new.country
+    when 'CA' then 'cad' when 'GB' then 'gbp' when 'IE' then 'eur'
+    when 'AU' then 'aud' when 'NZ' then 'nzd' else 'usd' end;
+  return new;
+end $$;
+create trigger listings_currency before insert or update of country on public.listings
+  for each row execute function private.listing_currency();
 create trigger listings_quota before insert on public.listings
   for each row execute function private.enforce_quota('seller_id', '20', '24 hours');
 

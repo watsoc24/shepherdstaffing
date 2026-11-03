@@ -1,12 +1,16 @@
 {
-  "name": "app-tmp",
+  "name": "irish-dance-connect",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run tests/unit",
+    "test:rls": "vitest run tests/rls",
+    "test:all": "vitest run"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
