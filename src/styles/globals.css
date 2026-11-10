@@ -1,0 +1,97 @@
+/* Shepherd Staffing design tokens (spec §14). Mobile-first. */
+:root {
+  --ink: #0c0a09;
+  --ink-2: #292524;
+  --parchment: #faf7f2;
+  --parchment-2: #f1ebe1;
+  --line: #e2d9cb;
+  --muted: #57534e;
+  --purple: #5b21b6;
+  --purple-2: #7c3aed;
+  --gold: #b45309;
+  --gold-2: #d97706;
+  --good: #15803d;
+  --warn: #b45309;
+  --bad: #b91c1c;
+  --radius: 10px;
+}
+
+/* Font variables come from next/font classes on .app-root, so resolve them there. */
+.app-root {
+  --font-heading: var(--font-cormorant), Georgia, serif;
+  --font-body: var(--font-dm-sans), system-ui, sans-serif;
+  --font-mono: var(--font-dm-mono), ui-monospace, monospace;
+  font-family: var(--font-body);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--parchment);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+}
+h1, h2, h3 { font-family: var(--font-heading); font-weight: 600; line-height: 1.15; margin: 0 0 0.5em; }
+h1 { font-size: clamp(2rem, 6vw, 3.25rem); }
+h2 { font-size: clamp(1.5rem, 4vw, 2.25rem); }
+a { color: var(--purple); }
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: 3px solid var(--gold-2);
+  outline-offset: 2px;
+}
+.label { font-family: var(--font-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.container { width: 100%; max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 10px 20px; border-radius: var(--radius); border: 1px solid transparent;
+  font: 600 1rem var(--font-body); cursor: pointer; text-decoration: none;
+}
+.btn-primary { background: var(--purple); color: #fff; }
+.btn-primary:hover { background: var(--purple-2); }
+.btn-ghost { background: transparent; border-color: var(--line); color: var(--ink); }
+.dark { background: var(--ink); color: var(--parchment); }
+.dark a { color: #c4b5fd; }
+.skip-link { position: absolute; left: -9999px; top: 8px; z-index: 10; background: #fff; color: var(--ink); padding: 8px 12px; }
+.skip-link:focus { left: 8px; }
+.site-footer { border-top: 1px solid var(--line); padding: 32px 0; color: var(--muted); font-size: 0.9rem; }
+.site-footer nav { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 8px; }
+.site-header { display: flex; align-items: center; justify-content: space-between; min-height: 64px; gap: 12px; }
+.brand { font-family: var(--font-heading); font-size: clamp(1.25rem, 5vw, 1.5rem); font-weight: 700; text-decoration: none; color: inherit; white-space: nowrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+/* Forms & cards */
+.card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 20px; }
+.auth-card { max-width: 440px; margin: 0 auto; }
+.field { margin-bottom: 16px; }
+.field label { display: block; font-weight: 600; margin-bottom: 6px; }
+.field input, .field textarea, .field select {
+  width: 100%; min-height: 44px; padding: 10px 12px; font: 16px var(--font-body); /* 16px stops iOS zoom */
+  border: 1px solid #a8a29e; border-radius: 8px; background: #fff; color: var(--ink);
+}
+.field textarea { min-height: 120px; resize: vertical; }
+.field input[aria-invalid="true"], .field textarea[aria-invalid="true"] { border-color: var(--bad); }
+.field-hint { margin: 0 0 6px; font-size: 0.875rem; color: var(--muted); }
+.field-error { margin: 6px 0 0; font-size: 0.875rem; color: var(--bad); }
+.btn[disabled] { opacity: 0.6; cursor: not-allowed; }
+.btn-block { width: 100%; }
+.checkbox { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 16px; }
+.checkbox input { width: 22px; height: 22px; margin-top: 2px; flex: none; }
+.segmented { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.segmented button { min-height: 44px; border-radius: 8px; border: 1px solid var(--line); background: #fff; font: 600 1rem var(--font-body); cursor: pointer; }
+.segmented button[aria-pressed="true"] { border-color: var(--purple); background: #ede9fe; color: var(--purple); }
+.banner { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid; }
+.banner-info { background: #ede9fe; border-color: #c4b5fd; color: #3b0764; }
+.banner-warn { background: #fef3c7; border-color: #fcd34d; color: #78350f; }
+.banner-error { background: #fee2e2; border-color: #fca5a5; color: #7f1d1d; }
+.banner-success { background: #dcfce7; border-color: #86efac; color: #14532d; }
+.muted { color: var(--muted); }
+.linklike { background: none; border: 0; padding: 0; font: inherit; color: var(--purple); text-decoration: underline; cursor: pointer; }
+.dark .linklike { color: #c4b5fd; }
+a.card { display: block; text-decoration: none; color: inherit; min-height: 44px; }
+a.card:hover { border-color: var(--purple-2); }
