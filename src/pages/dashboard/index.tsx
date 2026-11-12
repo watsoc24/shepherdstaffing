@@ -20,6 +20,8 @@ export default function Dashboard({ user, entitlements }: { user: SessionUser; e
           <Link className="card" href="/dashboard/matches"><strong>Matches</strong><br /><span className="muted">AI compatibility scores</span></Link>
           <Link className="card" href="/dashboard/prequal"><strong>PreQual assessments</strong><br /><span className="muted">Screening scores, best first</span></Link>
           <Link className="card" href="/dashboard/messages"><strong>Messages</strong><br /><span className="muted">Conversations with matches</span></Link>
+          <Link className="card" href="/dashboard/interview"><strong>Interview</strong><br /><span className="muted">Take the structured interview</span></Link>
+          <Link className="card" href="/dashboard/interview-results"><strong>Interview results</strong><br /><span className="muted">Evaluations shared with you</span></Link>
           <Link className="card" href="/dashboard/chat"><strong>ShepherdAI</strong><br /><span className="muted">Coaching on your search</span></Link>
           <Link className="card" href="/dashboard/account"><strong>Account</strong><br /><span className="muted">Password, billing, your data</span></Link>
           <Link className="card" href="/dashboard/billing"><strong>Billing</strong><br /><span className="muted">Membership, card, cancel</span></Link>

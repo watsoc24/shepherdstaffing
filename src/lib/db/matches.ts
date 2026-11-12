@@ -13,6 +13,9 @@ export interface MatchResult {
 export const find = (candidateId: string, churchId: string) =>
   db().match.findUnique({ where: { candidateId_churchId: { candidateId, churchId } } });
 
+export const findById = (id: string) =>
+  db().match.findUnique({ where: { id }, include: { candidate: true, church: true } });
+
 export const upsert = (candidateId: string, churchId: string, r: MatchResult) =>
   db().match.upsert({
     where: { candidateId_churchId: { candidateId, churchId } },

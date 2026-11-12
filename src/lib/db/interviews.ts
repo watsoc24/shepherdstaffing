@@ -18,6 +18,9 @@ export const submit = (id: string) =>
 export const saveEvaluation = (id: string, evaluationJson: Prisma.InputJsonValue, score: number) =>
   db().interview.update({ where: { id }, data: { status: "evaluated", evaluationJson, score } });
 
+export const setRecruiterNotes = (id: string, recruiterNotes: string | null) =>
+  db().interview.update({ where: { id }, data: { recruiterNotes } });
+
 export const setShare = (id: string, churchIds: string[]) =>
   db().interview.update({ where: { id }, data: { shareWithChurchIds: churchIds } });
 

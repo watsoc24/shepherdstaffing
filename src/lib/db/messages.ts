@@ -14,6 +14,9 @@ export async function send(threadId: string, senderUserId: string, body: string)
 export const markRead = (threadId: string, readerUserId: string) =>
   db().message.updateMany({ where: { threadId, senderUserId: { not: readerUserId }, readAt: null }, data: { readAt: new Date() } });
 
+export const unreadCount = (threadId: string, readerUserId: string) =>
+  db().message.count({ where: { threadId, senderUserId: { not: readerUserId }, readAt: null } });
+
 export const isBlocked = async (a: string, b: string) =>
   !!(await db().block.findFirst({
     where: { OR: [{ blockerUserId: a, blockedUserId: b }, { blockerUserId: b, blockedUserId: a }] },

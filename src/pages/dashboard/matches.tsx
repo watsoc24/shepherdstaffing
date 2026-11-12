@@ -1,4 +1,5 @@
 import type { GetServerSideProps } from "next";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/Layout";
 import { Banner } from "@/components/Banner";
@@ -26,6 +27,8 @@ export default function Matches() {
   const [error, setError] = useState<ApiError | null>(null);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  const [contacting, setContacting] = useState<string | null>(null);
+  const [firstMessage, setFirstMessage] = useState("");
 
   async function load() {
     try {
@@ -62,6 +65,20 @@ export default function Matches() {
     try {
       await apiFetch("/api/matches/dismiss", { method: "POST", body: { matchId: id } });
       setRows((r) => r.filter((m) => m.id !== id));
+    } catch (err) {
+      setError(err as ApiError);
+    }
+  }
+
+  async function contact(id: string) {
+    if (!firstMessage.trim()) return;
+    setError(null);
+    setNotice(null);
+    try {
+      await apiFetch("/api/threads/start", { method: "POST", body: { matchId: id, message: firstMessage } });
+      setContacting(null);
+      setFirstMessage("");
+      setNotice("Request sent. You'll hear back in Messages.");
     } catch (err) {
       setError(err as ApiError);
     }
@@ -112,9 +129,27 @@ export default function Matches() {
                   <p className="muted">Watch for: {m.gaps.join(" ")}</p>
                 )}
                 {m.recommendation && <p>{m.recommendation}</p>}
-                <button className="btn btn-ghost" type="button" onClick={() => dismiss(m.id)}>
-                  Dismiss
-                </button>
+                <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                  {contacting === m.id ? (
+                    <>
+                      <textarea rows={2} style={{ flex: "1 1 200px" }} value={firstMessage}
+                        onChange={(e) => setFirstMessage(e.target.value)}
+                        placeholder="Your first message — introduce yourself and why this looks like a fit." />
+                      <button className="btn btn-primary" type="button" disabled={!firstMessage.trim()} onClick={() => contact(m.id)}>
+                        Send request
+                      </button>
+                      <button className="btn btn-ghost" type="button" onClick={() => setContacting(null)}>Cancel</button>
+                    </>
+                  ) : (
+                    <button className="btn btn-primary" type="button" onClick={() => { setContacting(m.id); setFirstMessage(""); }}>
+                      Contact
+                    </button>
+                  )}
+                  <Link className="btn btn-ghost" href="/dashboard/messages">Messages</Link>
+                  <button className="btn btn-ghost" type="button" onClick={() => dismiss(m.id)}>
+                    Dismiss
+                  </button>
+                </div>
               </div>
             ))}
           </div>
