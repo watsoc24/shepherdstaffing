@@ -16,6 +16,8 @@ export const LIMITS = {
   inquiry: { limit: 5, window: "1 h" },
   prequalSubmit: { limit: 10, window: "1 h" }, // public lead-magnet endpoint; per IP only
   profileUpdate: { limit: 30, window: "1 h" }, // authenticated profile saves; per user
+  billingCheckout: { limit: 10, window: "1 h" }, // authenticated checkout sessions; per user
+  billingPortal: { limit: 10, window: "1 h" }, // authenticated portal sessions; per user
   mfa: { limit: 10, window: "15 m" },
   api: { limit: 300, window: "1 m" },
 } as const;

@@ -21,7 +21,7 @@ export function TrialBanner({ entitlements }: { entitlements: ClientEntitlements
     );
   }
   if (entitlements.pastDue) {
-    return <Banner tone="warn">We couldn&apos;t process your last payment. Please update your card in Account → Billing.</Banner>;
+    return <Banner tone="warn">We couldn&apos;t process your last payment. Please update your card in <Link href="/dashboard/billing">Billing</Link>.</Banner>;
   }
   return null;
 }
