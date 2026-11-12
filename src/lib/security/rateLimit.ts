@@ -14,6 +14,7 @@ export const LIMITS = {
   interviewSubmit: { limit: 5, window: "1 h" },
   messaging: { limit: 30, window: "1 h" },
   inquiry: { limit: 5, window: "1 h" },
+  prequalSubmit: { limit: 10, window: "1 h" }, // public lead-magnet endpoint; per IP only
   mfa: { limit: 10, window: "15 m" },
   api: { limit: 300, window: "1 m" },
 } as const;

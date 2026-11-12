@@ -45,4 +45,5 @@ src/content          legal markdown       src/lib/ai, billing, email, scoring, v
 
 - [x] **M1 Foundation** — scaffold, env validation, data layer, Redis rate limiter, AES-256-GCM crypto, audit log, strict CSP, CI
 - [x] **M2 Auth** — signup, hashed single-use verify tokens, trial-at-verify, login with lockout, reset, session versioning, CSRF, entitlements, guards
-- [ ] M3 Profiles · M4 Billing · M5 Matching + Chat · M6 Messaging · M7 Interview · M8 Intake + Admin · M9 Compliance + Ops · M10 Launch hardening
+- [x] **PreQual port (Nov 11, 2026)** — PreQual AI's 0–100 screening (weights, knockouts, thresholds) ported as `src/lib/scoring/prequal.ts`, `PreQualAssessment` in Prisma, `POST /api/prequal/submit`, and the public `/prequal` page. See `docs/PREQUAL_COMBINED_PLAN.md`. One product, one database: Shepherd Staffing is the product, PreQual is its screening engine.
+- [ ] M3 Profiles (remainder) · M4 Billing · M5 Matching + Chat · M6 Messaging · M7 Interview · M8 Intake + Admin · M9 Compliance + Ops · M10 Launch hardening

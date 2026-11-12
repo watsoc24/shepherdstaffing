@@ -110,6 +110,7 @@ model Candidate {
   matches    Match[]
   threads    Thread[]
   interviews Interview[]
+  preQualAssessments PreQualAssessment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -143,11 +144,48 @@ model Church {
   matches     Match[]
   threads     Thread[]
   engagements Engagement[]
+  preQualAssessments PreQualAssessment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([visibility, position])
+}
+
+// ─────────────────── PreQual screening (ported Nov 11, 2026) ───────────────────
+// One product, one database: PreQual AI is the screening engine inside
+// Shepherd Staffing. See docs/PREQUAL_COMBINED_PLAN.md. candidateId/churchId
+// are nullable so an anonymous lead-magnet submission can be stored before
+// an account exists; answers are 0–4 integers only, no free text in v1.
+
+enum PreQualRecommendation {
+  advance
+  review
+  not_advancing
+}
+
+model PreQualAssessment {
+  id             String                @id @default(cuid())
+  candidateId    String?
+  candidate      Candidate?            @relation(fields: [candidateId], references: [id], onDelete: SetNull)
+  churchId       String?
+  church         Church?               @relation(fields: [churchId], references: [id], onDelete: SetNull)
+  applicantName  String
+  applicantEmail String
+  role           String
+  answers        Json // { authorized: 1, exp_years: 4, ... } — ids from src/lib/scoring/prequal.ts
+  breakdown      Json // { experience: 22, availability: 18, ... } — points per category
+  score          Int
+  recommendation PreQualRecommendation
+  knockoutFailed Boolean               @default(false)
+  flags          Json // string[]
+  modelVersion   String // e.g. "prequal-v1"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([churchId, score])
+  @@index([candidateId, createdAt])
 }
 
 // ─────────────────────────── Matching ───────────────────────────

@@ -15,6 +15,7 @@ export default function Home() {
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 24 }}>
             <Link className="btn btn-primary" href="/signup?role=church">I&apos;m a church</Link>
             <Link className="btn btn-ghost" style={{ color: "#faf7f2" }} href="/signup?role=candidate">I&apos;m a candidate</Link>
+            <Link className="btn btn-ghost" style={{ color: "#faf7f2" }} href="/prequal">Try PreQual screening — free, 5 min</Link>
           </div>
         </div>
       </section>
