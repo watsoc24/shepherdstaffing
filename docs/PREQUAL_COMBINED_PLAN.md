@@ -71,6 +71,6 @@ This workspace has **no `node_modules` and no generated Prisma client**, and no 
 ## Roadmap after Phase 1
 
 1. **M3 Profiles** — candidate/church profile editing; link a PreQual assessment to the signed-in candidate at submit time (currently `candidateId` is set only when the caller is authenticated — see the API route).
-2. **Church dashboard** — list a church's assessments, filter by recommendation, export CSV (the PreQual dashboard behaviour, now server-side).
+2. **Church dashboard — done Nov 12, 2026 (Phase 2, local only, not yet pushed).** `GET /api/prequal/assessments` (church sees only its own church's assessments; candidate sees only their own; admin not served) and `src/pages/dashboard/prequal.tsx` — filter by recommendation, CSV export, linked from the dashboard hub. Assessment → candidate profile linking is still only the submit-time `candidateId`; full profile editing is still M3 work.
 3. **Match input** — optionally include `preQualScore` in `Match.breakdown` with a recorded weight.
 4. **Phase 2 — SMB pilot** — generic employer profile reusing the same questionnaire with a different question set version (`modelVersion: prequal-v2-smb`), only if church usage proves the flow.
