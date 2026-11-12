@@ -28,6 +28,9 @@ export type AuditAction =
   | "account.delete"
   | (string & {});
 
+/** Admin tail of the audit log, newest first. Never contains PII or decrypted values. */
+export const listRecent = (take = 100) => db().auditLog.findMany({ orderBy: { at: "desc" }, take });
+
 export async function audit(
   action: AuditAction,
   opts: { actorUserId?: string | null; targetType?: string; targetId?: string; ip?: string | null; meta?: Record<string, unknown> } = {},

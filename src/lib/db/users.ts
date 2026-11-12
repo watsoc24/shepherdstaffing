@@ -97,6 +97,16 @@ export const deactivate = (id: string) =>
 
 export const hardDelete = (id: string) => db().user.delete({ where: { id } });
 
+export const setRole = (id: string, role: "candidate" | "church" | "admin") => db().user.update({ where: { id }, data: { role } });
+
+/** Admin list: no password hashes, no tokens — only what an admin needs to see. */
+export const listRecent = (take = 50) =>
+  db().user.findMany({
+    orderBy: { createdAt: "desc" },
+    take,
+    select: { id: true, email: true, name: true, role: true, emailVerified: true, subscriptionStatus: true, trialEndDate: true, deactivatedAt: true, createdAt: true },
+  });
+
 /** Trial users whose trial ends within [from, to). Used by the reminder cron. */
 export const trialsEndingBetween = (from: Date, to: Date) =>
   db().user.findMany({

@@ -31,3 +31,14 @@ export const block = (blockerUserId: string, blockedUserId: string) =>
 
 export const report = (reporterUserId: string, reportedUserId: string, reason: string, threadId?: string) =>
   db().report.create({ data: { reporterUserId, reportedUserId, reason, threadId } });
+
+/** Admin moderation queue. "open" first, newest first. */
+export const listReports = (status?: string) =>
+  db().report.findMany({
+    where: status ? { status } : undefined,
+    orderBy: [{ status: "asc" }, { createdAt: "desc" }],
+    take: 100,
+  });
+
+export const setReportStatus = (id: string, status: "open" | "reviewed" | "actioned") =>
+  db().report.update({ where: { id }, data: { status } });

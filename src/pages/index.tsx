@@ -16,6 +16,7 @@ export default function Home() {
             <Link className="btn btn-primary" href="/signup?role=church">I&apos;m a church</Link>
             <Link className="btn btn-ghost" style={{ color: "#faf7f2" }} href="/signup?role=candidate">I&apos;m a candidate</Link>
             <Link className="btn btn-ghost" style={{ color: "#faf7f2" }} href="/prequal">Try PreQual screening — free, 5 min</Link>
+            <Link className="btn btn-ghost" style={{ color: "#faf7f2" }} href="/inquiry">Want us to run the search? Ask here</Link>
           </div>
         </div>
       </section>

@@ -46,6 +46,14 @@ export function update(id: string, data: Writable) {
 export const setVerified = (id: string, verified: boolean, by: string | null) =>
   db().candidate.update({ where: { id }, data: { verified, verifiedBy: verified ? by : null, verifiedAt: verified ? new Date() : null } });
 
+/** Admin list: newest first, with verification state and the account email. */
+export const listRecent = (take = 50) =>
+  db().candidate.findMany({
+    orderBy: { createdAt: "desc" },
+    take,
+    include: { user: { select: { email: true, name: true } } },
+  });
+
 export const listPublic = (opts: { position?: string; take?: number; skip?: number } = {}) =>
   db().candidate.findMany({
     where: { visibility: "public", position: opts.position, user: { deletedAt: null, deactivatedAt: null, emailVerified: true } },
