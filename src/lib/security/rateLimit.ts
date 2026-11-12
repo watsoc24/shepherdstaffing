@@ -18,6 +18,7 @@ export const LIMITS = {
   profileUpdate: { limit: 30, window: "1 h" }, // authenticated profile saves; per user
   billingCheckout: { limit: 10, window: "1 h" }, // authenticated checkout sessions; per user
   billingPortal: { limit: 10, window: "1 h" }, // authenticated portal sessions; per user
+  matchCompute: { limit: 5, window: "1 h" }, // match refreshes; per user (LLM calls are bounded per refresh)
   mfa: { limit: 10, window: "15 m" },
   api: { limit: 300, window: "1 m" },
 } as const;
