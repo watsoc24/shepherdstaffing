@@ -73,7 +73,9 @@ export default api(
           }
           case "invoice.payment_failed": {
             const invoice = event.data.object as Stripe.Invoice;
-            const subId = typeof invoice.subscription === "string" ? invoice.subscription : null;
+            const parent = invoice.parent;
+            const subRef = parent?.type === "subscription_details" ? parent.subscription_details?.subscription : null;
+            const subId = typeof subRef === "string" ? subRef : (subRef?.id ?? null);
             if (subId) await syncSubscriptionById(subId);
             break;
           }

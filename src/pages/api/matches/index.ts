@@ -1,8 +1,8 @@
 import { api } from "@/lib/api/handler";
 import { forbidden } from "@/lib/api/errors";
-import { requireAuth } from "@/lib/auth/guards";
+import { requireAuth, requireEntitlement } from "@/lib/auth/guards";
 import { candidates, churches, matches } from "@/lib/db";
-import { getEntitlements, requireEntitlement } from "@/lib/billing/entitlements";
+import { getEntitlements } from "@/lib/billing/entitlements";
 
 /**
  * GET /api/matches — the signed-in user's own matches, best first.

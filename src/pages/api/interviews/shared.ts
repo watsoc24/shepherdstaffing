@@ -1,6 +1,5 @@
 import { api } from "@/lib/api/handler";
-import { requireAuth } from "@/lib/auth/guards";
-import { requireEntitlement } from "@/lib/billing/entitlements";
+import { requireAuth, requireEntitlement } from "@/lib/auth/guards";
 import { listSharedForChurch } from "@/lib/interview/service";
 
 /** GET /api/interviews/shared — evaluated interviews shared with this church. Scores and evaluations only, never raw answers. */

@@ -41,7 +41,8 @@ export async function syncSubscription(sub: Stripe.Subscription): Promise<void> 
   const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
   const user = await users.findByStripeCustomerId(customerId);
   if (!user) return; // Not our customer (e.g. a test-mode stranger) — nothing to sync.
-  const currentPeriodEnd = sub.current_period_end ? new Date(sub.current_period_end * 1000) : null;
+  const firstItem = sub.items.data[0];
+  const currentPeriodEnd = firstItem?.current_period_end ? new Date(firstItem.current_period_end * 1000) : null;
   await subscriptions.upsert({
     userId: user.id,
     stripeCustomerId: customerId,

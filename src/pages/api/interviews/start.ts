@@ -1,6 +1,5 @@
 import { api } from "@/lib/api/handler";
-import { requireAuth } from "@/lib/auth/guards";
-import { requireEntitlement } from "@/lib/billing/entitlements";
+import { requireAuth, requireEntitlement } from "@/lib/auth/guards";
 import { startInterview } from "@/lib/interview/service";
 
 /** POST /api/interviews/start — begin (or return to) the interview draft. Trial members may take it; the consent version is recorded. */

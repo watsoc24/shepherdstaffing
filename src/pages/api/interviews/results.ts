@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { api, parseQuery } from "@/lib/api/handler";
-import { requireAuth } from "@/lib/auth/guards";
-import { requireEntitlement } from "@/lib/billing/entitlements";
+import { requireAuth, requireEntitlement } from "@/lib/auth/guards";
 import { getResultForChurch } from "@/lib/interview/service";
 
 const querySchema = z.object({ interviewId: z.string().min(1) });
