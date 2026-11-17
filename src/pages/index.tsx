@@ -8,7 +8,7 @@ export default function Home() {
       <section className="dark" style={{ padding: "64px 0 80px" }}>
         <div className="container">
           <p className="label" style={{ color: "#d6d3d1" }}>Church recruiting, done with care</p>
-          <h1>Finding the leader fit for your ministry is sacred work.</h1>
+          <h1>Find the leader who fits your church.</h1>
           <p style={{ maxWidth: 560, color: "#e7e5e4" }}>
             Detailed profiles, honest AI-assisted matching, and recruiters who know ministry.
           </p>
