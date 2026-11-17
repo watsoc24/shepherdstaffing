@@ -10,7 +10,7 @@ export const getServerSideProps: GetServerSideProps = (ctx) => requirePageAuth(c
 
 type ChatMessage = { id: string; role: string; content: string; createdAt: string };
 
-/** M5 ShepherdAI chat: coaching on your search. Trial members get 10 messages total. */
+/** M5 FitAI chat: coaching on your search. Trial members get 10 messages total. */
 export default function Chat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [remaining, setRemaining] = useState<number | "unlimited" | null>(null);
@@ -58,9 +58,9 @@ export default function Chat() {
   }
 
   return (
-    <Layout title="ShepherdAI">
+    <Layout title="FitAI">
       <div className="container" style={{ padding: "32px 16px 64px", maxWidth: 720 }}>
-        <p className="label">ShepherdAI · coaching</p>
+        <p className="label">FitAI · coaching</p>
         <h1>Talk through your search</h1>
         <p className="muted">
           {remaining === null

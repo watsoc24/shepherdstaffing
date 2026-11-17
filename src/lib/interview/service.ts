@@ -1,4 +1,4 @@
-import { candidates, churches, interviews, matches } from "../db";
+import { candidates, churches, consents, interviews, matches } from "../db";
 import { forbidden, notFound } from "../api/errors";
 import { INTERVIEW_CONSENT_VERSION } from "../legal";
 import { decrypt, encrypt } from "../security/crypto";
@@ -61,9 +61,10 @@ export async function startInterview(userId: string) {
   const latest = await interviews.latestForCandidate(c.id);
   if (latest && latest.status === "draft") return { interviewId: latest.id, isNew: false };
   if (latest && latest.status !== "draft" && !latest.retakeAllowed) {
-    throw forbidden("You have already submitted an interview. Ask Shepherd Staffing for a retake if you need one.");
+    throw forbidden("You have already submitted an interview. Ask Fit For Ministry for a retake if you need one.");
   }
   const created = await interviews.createDraft(c.id, INTERVIEW_CONSENT_VERSION);
+  await consents.record(userId, "interview", INTERVIEW_CONSENT_VERSION);
   return { interviewId: created.id, isNew: true };
 }
 

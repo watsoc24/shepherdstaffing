@@ -84,7 +84,7 @@ export default function Admin() {
     <Layout title="Admin">
       <div className="container" style={{ padding: "32px 16px 64px" }}>
         <p className="label">Admin</p>
-        <h1>Shepherd Staffing, behind the desk</h1>
+        <h1>Fit For Ministry, behind the desk</h1>
         {error && <Banner tone="error">{error.message}</Banner>}
         {notice && <Banner tone="success">{notice}</Banner>}
         {!loaded ? (

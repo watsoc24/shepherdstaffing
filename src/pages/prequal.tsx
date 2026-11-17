@@ -90,7 +90,7 @@ export default function PreQual() {
   return (
     <Layout title="PreQual screening">
       <section className="container" style={{ padding: "48px 0" }}>
-        <p className="label">PreQual screening · by Shepherd Staffing</p>
+        <p className="label">PreQual screening · by Fit For Ministry</p>
         <h1>Prequalify in about 5 minutes.</h1>
         <p style={{ maxWidth: 560 }}>
           Answer honestly — there are no trick questions. Your answers are scored the same way for every

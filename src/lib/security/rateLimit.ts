@@ -13,6 +13,7 @@ export const LIMITS = {
   chat: { limit: 60, window: "1 h" }, // paid fair-use; trial has its own lifetime cap
   interviewSubmit: { limit: 5, window: "1 h" },
   interviewSave: { limit: 30, window: "1 h" }, // authenticated draft saves; per user
+  accountExport: { limit: 5, window: "1 h" }, // data exports are heavy; per user
   messaging: { limit: 30, window: "1 h" },
   inquiry: { limit: 5, window: "1 h" },
   prequalSubmit: { limit: 10, window: "1 h" }, // public lead-magnet endpoint; per IP only

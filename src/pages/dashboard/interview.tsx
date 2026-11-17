@@ -112,7 +112,7 @@ export default function Interview() {
         <h1>The structured interview</h1>
         <p className="muted">
           Six written questions, answered in your own time. Your answers are encrypted and stay between you and
-          Shepherd Staffing — churches see only the evaluation, and only the ones you choose.
+          Fit For Ministry — churches see only the evaluation, and only the ones you choose.
         </p>
         {error && <Banner tone="error">{error.message}</Banner>}
         {notice && <Banner tone="success">{notice}</Banner>}

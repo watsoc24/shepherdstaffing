@@ -4,7 +4,7 @@
  * at rest. A recruiter (admin) scores each answer 0–4 and writes an
  * evaluation; the candidate chooses which matched churches may see the
  * evaluation. Churches see the score and the evaluation — never the
- * candidate's raw answers. Those stay between the candidate and Shepherd.
+ * candidate's raw answers. Those stay between the candidate and Fit For Ministry.
  *
  * Score: sum of the six 0–4 question scores (max 24), scaled to 0–100.
  */
@@ -49,7 +49,7 @@ export const INTERVIEW_QUESTIONS: InterviewQuestion[] = [
 ];
 
 export const INTERVIEW_CONSENT_TEXT =
-  "By starting this interview you agree that Shepherd Staffing may store your answers encrypted, share the evaluation — not your raw answers — only with churches you choose, and keep your answers private from other candidates and churches. You can request a copy or a deletion of your answers at any time.";
+  "By starting this interview you agree that Fit For Ministry may store your answers encrypted, share the evaluation — not your raw answers — only with churches you choose, and keep your answers private from other candidates and churches. You can request a copy or a deletion of your answers at any time.";
 
 export const ANSWER_MIN_LENGTH = 10;
 export const ANSWER_MAX_LENGTH = 2000;

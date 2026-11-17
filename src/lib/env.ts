@@ -22,7 +22,7 @@ const base = z.object({
   ENCRYPTION_KEY_PREVIOUS: optionalKey32, // previous key, version = ENCRYPTION_KEY_VERSION - 1
   CRON_SECRET: z.string().min(32),
   ADMIN_EMAILS: z.string().default(""),
-  SUPPORT_EMAIL: z.string().default("support@shepherdstaffing.com"),
+  SUPPORT_EMAIL: z.string().default("support@fitforministry.com"),
 
   // Integrations — required in production, optional in dev/test.
   UPSTASH_REDIS_REST_URL: z.string().optional(),
@@ -34,8 +34,8 @@ const base = z.object({
   STRIPE_PRICE_PLATFORM_MONTHLY: z.string().optional(),
   STRIPE_PRICE_PLATFORM_ANNUAL: z.string().optional(),
   BREVO_API_KEY: z.string().optional(),
-  EMAIL_FROM: z.string().default("no-reply@shepherdstaffing.com"),
-  EMAIL_FROM_NAME: z.string().default("Shepherd Staffing"),
+  EMAIL_FROM: z.string().default("no-reply@fitforministry.com"),
+  EMAIL_FROM_NAME: z.string().default("Fit For Ministry"),
   BACKGROUND_CHECK_VENDOR: z.string().optional(),
   BACKGROUND_CHECK_API_KEY: z.string().optional(),
 });

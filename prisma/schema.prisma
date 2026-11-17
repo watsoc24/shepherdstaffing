@@ -1,4 +1,4 @@
-// Shepherd Staffing data model (Postgres). Mirrors spec Section 5; field names are
+// Fit For Ministry data model (Postgres). Mirrors spec Section 5; field names are
 // camelCase versions of the spec's names. Columns ending in "Enc" hold AES-256-GCM
 // ciphertext produced by src/lib/security/crypto.ts — never plaintext.
 
@@ -154,7 +154,7 @@ model Church {
 
 // ─────────────────── PreQual screening (ported Nov 11, 2026) ───────────────────
 // One product, one database: PreQual AI is the screening engine inside
-// Shepherd Staffing. See docs/PREQUAL_COMBINED_PLAN.md. candidateId/churchId
+// Fit For Ministry. See docs/PREQUAL_COMBINED_PLAN.md. candidateId/churchId
 // are nullable so an anonymous lead-magnet submission can be stored before
 // an account exists; answers are 0–4 integers only, no free text in v1.
 
@@ -408,6 +408,7 @@ enum ConsentType {
   terms
   privacy
   interview_recording
+  interview
   share_profile
   background_check
 }

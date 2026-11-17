@@ -97,6 +97,10 @@ export const deactivate = (id: string) =>
 
 export const hardDelete = (id: string) => db().user.delete({ where: { id } });
 
+/** Soft delete: the account is closed and every session revoked; personal data is purged within 30 days (see docs/RETENTION.md). */
+export const softDelete = (id: string) =>
+  db().user.update({ where: { id }, data: { deletedAt: new Date(), sessionVersion: { increment: 1 } } });
+
 export const setRole = (id: string, role: "candidate" | "church" | "admin") => db().user.update({ where: { id }, data: { role } });
 
 /** Admin list: no password hashes, no tokens — only what an admin needs to see. */

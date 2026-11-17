@@ -154,8 +154,8 @@ describe("login", () => {
   });
 
   it("promotes ADMIN_EMAILS to admin on first verified login", async () => {
-    await signupAndVerify("boss@shepherdstaffing.com");
-    const u = await db().user.findUniqueOrThrow({ where: { email: "boss@shepherdstaffing.com" } });
+    await signupAndVerify("boss@fitforministry.com");
+    const u = await db().user.findUniqueOrThrow({ where: { email: "boss@fitforministry.com" } });
     expect(u.role).toBe("admin");
   });
 });

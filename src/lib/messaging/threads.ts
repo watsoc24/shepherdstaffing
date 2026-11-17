@@ -25,8 +25,8 @@ async function notify(userId: string | null, subject: string, text: string) {
   await sendEmailSafe({
     to: user.email,
     subject,
-    text: `${text}\n\nReply in your Shepherd Staffing dashboard.`,
-    html: `<p>${text}</p><p><a href="/dashboard/messages">Reply in your Shepherd Staffing dashboard</a>.</p>`,
+    text: `${text}\n\nReply in your Fit For Ministry dashboard.`,
+    html: `<p>${text}</p><p><a href="/dashboard/messages">Reply in your Fit For Ministry dashboard</a>.</p>`,
     tag: "messaging",
   });
 }
@@ -76,7 +76,7 @@ export async function startThread(input: { userId: string; canContact: boolean; 
     await threads.setStatus(existing.id, "requested");
     await messages.send(existing.id, input.userId, input.firstMessage);
     const full = await threads.findById(existing.id);
-    if (full) await notify(otherUserId(full, input.userId), "New contact request on Shepherd Staffing", "Someone you matched with has reached out again.");
+    if (full) await notify(otherUserId(full, input.userId), "New contact request on Fit For Ministry", "Someone you matched with has reached out again.");
     return { threadId: existing.id, isNew: false };
   }
   const created = await threads.create(match.candidateId, match.churchId, input.userId, input.firstMessage);
@@ -84,7 +84,7 @@ export async function startThread(input: { userId: string; canContact: boolean; 
   if (full) {
     await notify(
       otherUserId(full, input.userId),
-      "New contact request on Shepherd Staffing",
+      "New contact request on Fit For Ministry",
       `A ${isCandidate ? "candidate" : "church"} you matched with has sent you a message.`,
     );
   }
@@ -123,7 +123,7 @@ export async function sendReply(input: { userId: string; threadId: string; body:
   const gate = canSend({ status: thread.status, isParty: party !== null, isBlocked: blocked });
   if (!gate.ok) throw forbidden(gate.reason ?? "Not allowed.");
   const msg = await messages.send(input.threadId, input.userId, input.body);
-  await notify(otherUserId(thread, input.userId), "New message on Shepherd Staffing", "You have a new message in your Shepherd Staffing conversation.");
+  await notify(otherUserId(thread, input.userId), "New message on Fit For Ministry", "You have a new message in your Fit For Ministry conversation.");
   return { id: msg.id, createdAt: msg.createdAt.toISOString() };
 }
 

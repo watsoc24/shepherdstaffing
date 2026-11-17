@@ -3,7 +3,7 @@ import { Layout } from "@/components/Layout";
 import { Banner } from "@/components/Banner";
 import { apiFetch, type ApiError } from "@/lib/client/apiFetch";
 
-/** M8 public intake: a church asks Shepherd Staffing to run the search for them — assisted or full service. */
+/** M8 public intake: a church asks Fit For Ministry to run the search for them — assisted or full service. */
 export default function Inquiry() {
   const [done, setDone] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);

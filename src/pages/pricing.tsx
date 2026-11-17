@@ -66,7 +66,7 @@ export default function Pricing() {
                 <ul>
                   <li>See matches in full</li>
                   <li>Contact matches</li>
-                  <li>Unlimited ShepherdAI chat</li>
+                  <li>Unlimited FitAI chat</li>
                   <li>Interviews and results</li>
                 </ul>
                 <button className="btn btn-primary btn-block" disabled={!!busy || isPaid} onClick={() => choose(interval)}>
@@ -78,7 +78,7 @@ export default function Pricing() {
         </div>
         <p className="muted" style={{ marginTop: 24 }}>
           Cancel anytime in Billing — access runs to the end of the paid period. Payments are processed by Stripe;
-          Shepherd Staffing never sees your card number.
+          Fit For Ministry never sees your card number.
         </p>
       </div>
     </Layout>

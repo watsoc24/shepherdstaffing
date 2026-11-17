@@ -1,28 +1,28 @@
-# PreQual + Shepherd — combined plan
+# PreQual + Fit For Ministry — combined plan
 
-**Date:** Nov 11, 2026 — approved by the user in the PreQual AI chat ("Yes — build the combined plan and port PreQual into Shepherd").
-**Decision:** One product, one database. **Shepherd Staffing is the product. PreQual AI is its screening engine, not a second product.**
+**Date:** Nov 11, 2026 — approved by the user in the PreQual AI chat ("Yes — build the combined plan and port PreQual into Fit For Ministry").
+**Decision:** One product, one database. **Fit For Ministry is the product. PreQual AI is its screening engine, not a second product.**
 
 ## Why this model
 
 - **Generic job search database — rejected.** Online recruitment is $37–43B globally, with Indeed ~20% share and LinkedIn ~15%; Indeed reaches 92.9% of US online job seekers. A $0-budget solo build cannot win network effects there.
 - **PreQual AI alone, for all SMBs — rejected as the lead.** Pre-employment testing is $3.1–4.25B, but HireVue, Criteria, Wonderlic, SHL, Checkr and every ATS already screen, and Indeed gives basic screening away. It is a feature, not a company.
-- **Shepherd Staffing for non-mega churches — the wedge.** ~356,739 US congregations (2020 Religion Census), ~373,000 by the broader Hartford estimate, median 70 people, only ~1,850 megachurches. 70% have key roles to fill; only ~a third use formal recruiting. Vanderbloemen (250k-candidate DB, 4,100+ clients) and ChurchStaffing.com ($249/mo) serve the top end. The non-mega church that hires once every year or two, cannot pay retained-search fees, and needs doctrine / culture / calling fit is underserved — and it is the founder's background.
+- **Fit For Ministry for non-mega churches — the wedge.** ~356,739 US congregations (2020 Religion Census), ~373,000 by the broader Hartford estimate, median 70 people, only ~1,850 megachurches. 70% have key roles to fill; only ~a third use formal recruiting. Vanderbloemen (250k-candidate DB, 4,100+ clients) and ChurchStaffing.com ($249/mo) serve the top end. The non-mega church that hires once every year or two, cannot pay retained-search fees, and needs doctrine / culture / calling fit is underserved — and it is the founder's background.
 
-PreQual's value in that model is as a **lead magnet and pre-screen**: a free, 5-minute questionnaire that grows the candidate database, then Shepherd's AI matching does what a rubric cannot — theology, culture, and calling fit.
+PreQual's value in that model is as a **lead magnet and pre-screen**: a free, 5-minute questionnaire that grows the candidate database, then Fit For Ministry's AI matching does what a rubric cannot — theology, culture, and calling fit.
 
 ## What was ported (Phase 1, this change)
 
 From `~/workspace/projects/prequal-ai/` (fresh build, Nov 10, 2026 — landing page, 7-step questionnaire, 0–100 scoring, localStorage only, no backend):
 
-| PreQual piece | Shepherd home |
+| PreQual piece | Fit For Ministry home |
 |---|---|
 | 0–100 scoring, weights Experience 25 / Availability 20 / Practical 20 / Mission 20 / Communication 15; thresholds Advance 80+, Review 60–79, Not advancing <60; any knockout "no" = Not advancing | `src/lib/scoring/prequal.ts` — pure function, no DB import, unit-tested in `tests/prequal.test.ts` |
 | 3 knockout questions + 10 scored questions (0–4 each, 2 per category) | Same file: `PREQUAL_QUESTIONS`, `PREQUAL_KNOCKOUTS`, `scorePreQual()` — verbatim values from PreQual `app.js` |
 | localStorage submissions | `PreQualAssessment` in `prisma/schema.prisma` + migration `20261112000000_prequal_assessment` — one Postgres table, linked to `Candidate` and `Church` when known, nullable both so anonymous lead-magnet submissions can be stored before an account exists |
 | Hiring-team summary table + CSV export | `src/lib/db/prequal.ts` (`createAssessment`, `listForChurch`, `listForCandidate`) + `POST /api/prequal/submit` (server-side scoring — never trust a client score) |
 | Landing page + questionnaire | `src/pages/prequal.tsx` — public page using the existing `Layout` / `Field` components; linked from the home page |
-| Standalone PreQual brand | Retired as a separate product. The name survives only as a feature: "PreQual screening, by Shepherd Staffing." See `~/workspace/projects/prequal-ai/README.md` (updated to point here). |
+| Standalone PreQual brand | Retired as a separate product. The name survives only as a feature: "PreQual screening, by Fit For Ministry." See `~/workspace/projects/prequal-ai/README.md` (updated to point here). |
 
 ## Data model
 
@@ -44,7 +44,7 @@ PreQualAssessment
 
 Indexes: `(churchId, score)`, `(candidateId, createdAt)`. No encrypted columns in v1: answers are 0–4 integers and short labels, no free-text calling notes. If free-text answers are ever added, they go through the existing AES-256-GCM path (`src/lib/security/crypto.ts`) like `Candidate.callingNotesEnc`, not plaintext.
 
-## Rules carried over from Shepherd
+## Rules carried over from Fit For Ministry
 
 - All DB access only through `src/lib/db/*` (Decision #1). Routes never import the Prisma client.
 - API routes use the `api()` wrapper in `src/lib/api/handler.ts` — method allow-list, same-origin CSRF on state-changing methods, uniform JSON errors.

@@ -9,10 +9,10 @@ import { completeText } from "@/lib/ai/anthropic";
 const schema = z.object({ message: z.string().trim().min(1).max(2000) });
 
 const SYSTEM =
-  "You are ShepherdAI, a coaching assistant for church hiring. You help candidates think through ministry roles and help churches think through who they need. Be practical and specific, grounded in what the user tells you. Never invent specific churches, candidates, or jobs. If you do not know something, say so. Keep answers short enough to read on a phone.";
+  "You are FitAI, a coaching assistant for church hiring. You help candidates think through ministry roles and help churches think through who they need. Be practical and specific, grounded in what the user tells you. Never invent specific churches, candidates, or jobs. If you do not know something, say so. Keep answers short enough to read on a phone.";
 
 /**
- * GET /api/chat — recent ShepherdAI history.
+ * GET /api/chat — recent FitAI history.
  * POST /api/chat — send a message. Trial members get 10 messages total
  * (atomic cap); paid members are unlimited within the 60/hour fair-use
  * rate limit. Both messages and usage are recorded.
@@ -22,7 +22,7 @@ export default api({
     const ctx = await requireAuth(req, res);
     const ent = await getEntitlements(ctx.user.id);
     if (ent.state !== "trial" && ent.state !== "paid") {
-      throw forbidden("ShepherdAI chat is available on trial and membership. Choose a plan to keep going.");
+      throw forbidden("FitAI chat is available on trial and membership. Choose a plan to keep going.");
     }
     const messages = await chat.recent(ctx.user.id, 20);
     res.status(200).json({ messages, remaining: ent.chatRemaining });
@@ -31,7 +31,7 @@ export default api({
     const ctx = await requireAuth(req, res);
     const ent = await getEntitlements(ctx.user.id);
     if (ent.state !== "trial" && ent.state !== "paid") {
-      throw forbidden("ShepherdAI chat is available on trial and membership. Choose a plan to keep going.");
+      throw forbidden("FitAI chat is available on trial and membership. Choose a plan to keep going.");
     }
     await limit("chat", `user:${ctx.user.id}`);
     if (ent.state === "trial") {
