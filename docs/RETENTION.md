@@ -22,7 +22,7 @@ Counts as the retention policy referenced by the privacy policy.
 | PreQual assessments (signed-in) | With the account | Deleted with the account |
 | PreQual assessments (anonymous lead) | 1 year | Purged |
 | Audit log (all actions) | 1 year | Purged; contains no PII or decrypted values |
-| Chat history (FitAI) | With the account | Deleted with the account |
+| Chat history (FitCoach) | With the account | Deleted with the account |
 
 ## Deletion
 

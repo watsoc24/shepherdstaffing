@@ -66,7 +66,7 @@ export default function Pricing() {
                 <ul>
                   <li>See matches in full</li>
                   <li>Contact matches</li>
-                  <li>Unlimited FitAI chat</li>
+                  <li>Unlimited FitCoach chat</li>
                   <li>Interviews and results</li>
                 </ul>
                 <button className="btn btn-primary btn-block" disabled={!!busy || isPaid} onClick={() => choose(interval)}>
